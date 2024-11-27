@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEATHER API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url(pexels-gesel-763398.jpg);
+        }
+
+        .weather-container {
+            background: url(pexels-hikaique-125510.jpg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            height: 400px;
+    
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .weather-info {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: white;
+            font-weight: bold;
+        }
+
+        .weather-container {
+            color: aliceblue;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="weather-container">
+        <h2>WEATHER REPORT</h2>
+        <input type="text" id="location" placeholder="Search">
+        <button id="getWeather">Get Weather</button>
+
+        <div class="weather-info" id="weatherInfo"></div>
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        document.getElementById('getWeather').addEventListener('click', function() {
+            const location = document.getElementById('location').value;
+            const errorElement = document.getElementById('error');
+            const weatherInfoElement = document.getElementById('weatherInfo');
+
+            // Clear previous error and weather info
+            errorElement.textContent = '';
+            weatherInfoElement.textContent = '';
+
+            if (location === '') {
+                errorElement.textContent = 'Please enter a location!';
+                return;
+            }
+
+            const apiKey = 'cc3a28bb6b07464ca8570812242011'; // Replace with your WeatherAPI key
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}`;
+
+            // Fetch weather data
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Location not found!');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Display weather information
+                    const weatherData = data.current;
+                    const locationData = data.location;
+
+                    weatherInfoElement.innerHTML = `
+                        <h3>Weather in ${locationData.name}, ${locationData.country}</h3>
+                        <p><strong>Temperature:</strong> ${weatherData.temp_c}°C</p>
+                        <p><strong>Condition:</strong> ${weatherData.condition.text}</p>
+                        <p><strong>Humidity:</strong> ${weatherData.humidity}%</p>
+                        <p><strong>Wind:</strong> ${weatherData.wind_kph} km/h</p>
+                    `;
+                })
+                .catch(error => {
+                    // Handle errors, such as location not found or network issues
+                    errorElement.textContent = error.message;
+                });
+        });
+    </script>
+
+</body>
+</html>
